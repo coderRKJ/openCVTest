@@ -1,2 +1,2 @@
 # openCVTest
- Learing the uses of OpenCV Library in Python.
+ Learning to use the of OpenCV Library in Python.
