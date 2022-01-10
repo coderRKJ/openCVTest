@@ -40,8 +40,21 @@ def lines_shapes(size):
     cv2.waitKey(0)
 
 
+def warp_perspective(img_file, points, width, height):
+    img = cv2.imread(img_file)
+    ref_points = [(0, 0), (width, 0), (0, height), (width, height)]
+    matrix = cv2.getPerspectiveTransform(np.float32(points), np.float32(ref_points))
+    transformed_img = cv2.warpPerspective(img, matrix, (width, height))
+    for point in points:
+        cv2.circle(img, point, 5, (0, 0, 255), cv2.FILLED)
+    cv2.imshow("Original image with markings", img)
+    cv2.imshow("Transformed image", transformed_img)
+    cv2.waitKey(0)
+
+
 if __name__ == '__main__':
     # show_img('Resources/lena.bmp', 1000)
     # show_video()
     # cv2.destroyAllWindows()
-    lines_shapes((512, 512))
+    # lines_shapes((512, 512))
+    warp_perspective("Resources/chess.jpg", [(23, 149), (187, 93), (290, 334), (474, 237)], 300, 600)
