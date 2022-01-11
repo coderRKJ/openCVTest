@@ -50,6 +50,35 @@ def warp_perspective(img_file, points, width, height):
     cv2.imshow("Original image with markings", img)
     cv2.imshow("Transformed image", transformed_img)
     cv2.waitKey(0)
+    return transformed_img
+
+
+def warp_perspective_interactive(img_file, width, height):
+    def mouse_points(event, x, y, flags, params):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            points.append((x, y))
+            # Draw new point on the image
+            cv2.circle(img, points[-1], 3, (0, 0, 255), cv2.FILLED)
+
+    points = []
+    ref_points = ["top left", "top right", "bottom left", "bottom right"]
+    img = cv2.imread(img_file)
+    while len(points) < 4:  # Allow only 4 points to be selected by the user
+
+        cv2.imshow("Selection Window", img)
+        cv2.setMouseCallback("Selection Window", mouse_points)
+
+        window_title = f"Image with marking selection: Select {ref_points[len(points)]} point"
+        cv2.setWindowTitle("Selection Window", window_title)
+
+        # Cancel and return if user presses key q
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            return None
+
+    cv2.waitKey(300)  # Prevents accidental BG click
+    cv2.destroyAllWindows()  # Closes Selection Window
+
+    return warp_perspective(img_file, points, width, height)
 
 
 if __name__ == '__main__':
@@ -57,4 +86,5 @@ if __name__ == '__main__':
     # show_video()
     # cv2.destroyAllWindows()
     # lines_shapes((512, 512))
-    warp_perspective("Resources/chess.jpg", [(23, 149), (187, 93), (290, 334), (474, 237)], 300, 600)
+    # warp_perspective("Resources/chess.jpg", [(23, 149), (187, 93), (290, 334), (474, 237)], 300, 600)
+    warp_perspective_interactive("Resources/chess.jpg", 300, 600)
