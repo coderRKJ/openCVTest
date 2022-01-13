@@ -2,8 +2,9 @@ import cv2
 import numpy as np
 
 
-def stack_images(img_array, scale, labels=None, size=None):
+def stack_images(img_array, scale=1.0, labels=None, size=None):
     if size is None:
+        # TODO: correct for img_array being 1-D lists
         size = (img_array[0][0].shape[1], img_array[0][0].shape[0])  # (width, height)
 
     rows = len(img_array)

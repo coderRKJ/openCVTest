@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+from stack import stack_images
+
 
 def show_img(file_name, wait_time):
     img = cv2.imread(file_name)
@@ -8,17 +10,22 @@ def show_img(file_name, wait_time):
     cv2.waitKey(wait_time)
 
 
-def show_video(file_name=0):
+def show_video(file_name=0, title="Video", transform=None, scale=1.0, labels=None, size=None):
     cap = cv2.VideoCapture(file_name, cv2.CAP_DSHOW)  # ?cv2.CAP_DSHOW slows down system?
 
     while True:
         success, img = cap.read()
-        img = cv2.resize(img, (200, 400))  # resize (width/x, height/y)
-        img = img[:200, 50:350]  # crop: [height, width]
+        # img = cv2.resize(img, (200, 400))  # resize (width/x, height/y)
+        # img = img[:200, 50:350]  # crop: [height, width]
         if not success:
             print("Error!")
             break
-        cv2.imshow("Video", img)
+
+        if transform is None:
+            stacked_images = stack_images([[img]], scale=scale, labels=labels, size=size)
+        else:
+            stacked_images = stack_images([[img] + transform(img)], scale=scale, labels=labels, size=size)
+        cv2.imshow(title, stacked_images)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -83,8 +90,8 @@ def warp_perspective_interactive(img_file, width, height):
 
 if __name__ == '__main__':
     # show_img('Resources/lena.bmp', 1000)
-    # show_video()
+    show_video(transform=lambda img: [np.zeros(img.shape[:2] + (3,), np.uint8)], scale=0.1)
     # cv2.destroyAllWindows()
     # lines_shapes((512, 512))
     # warp_perspective("Resources/chess.jpg", [(23, 149), (187, 93), (290, 334), (474, 237)], 300, 600)
-    warp_perspective_interactive("Resources/chess.jpg", 300, 600)
+    # warp_perspective_interactive("Resources/chess.jpg", 300, 600)
