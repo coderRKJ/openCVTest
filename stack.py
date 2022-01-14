@@ -4,8 +4,11 @@ import numpy as np
 
 def stack_images(img_array, scale=1.0, labels=None, size=None):
     if size is None:
-        # TODO: correct for img_array being 1-D lists
-        size = (img_array[0][0].shape[1], img_array[0][0].shape[0])  # (width, height)
+        # Unfold img_array until its first non-list/tuple element id found
+        unfold = img_array
+        while isinstance(unfold, list) or isinstance(unfold, tuple):
+            unfold = unfold[0]
+        size = (int(scale*unfold.shape[1]), int(scale*unfold.shape[0]))  # (width, height)
 
     rows = len(img_array)
     cols = 1
@@ -65,7 +68,7 @@ if __name__ == "__main__":
 
         StackedImages = stack_images(([img, imgGray, imgBlur],
                                       [imgCanny, imgDilation, imgEroded]),
-                                     0.1, size=(frameWidth, frameHeight))
+                                     0.3, size=(frameWidth, frameHeight))
         cv2.imshow("Staked Images", StackedImages)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
